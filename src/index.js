@@ -35,10 +35,11 @@ const state = fsm(
         },
         oneSelected: {
             select: (position) => {
-                if (areTilesAdjacent(state.selectedTile, position)) {
-                    // take action
-                    console.log('adjacent');
-
+                if (
+                    isTileInMap(position, w, h)
+                    && areTilesAdjacent(state.selectedTile, position)
+                ) {
+                    swap(state.selectedTile, position);
                     state.transition('noneSelected');
                 } else {
                     state.selectedTile = position;
@@ -48,6 +49,7 @@ const state = fsm(
     },
     'noneSelected'
 );
+const rng = new Random(1);
 
 init(game, w, h);
 tiles = getRandomTiles(w, h);
@@ -112,8 +114,10 @@ function getTileCoordFromMouseEvent(event) {
     }
 }
 
-function swap() {
-
+function swap(a, b) {
+    const aOld = tiles[a.row][a.col];
+    tiles[a.row][a.col] = tiles[b.row][b.col];
+    tiles[b.row][b.col] = aOld;
 }
 
 function calcScore(tiles) {
@@ -233,7 +237,7 @@ function getRandomType() {
 }
 
 function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
+  return Math.floor(rng.nextFloat() * max);
 }
 
 function fsm(states, initialState) {
