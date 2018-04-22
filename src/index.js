@@ -4,6 +4,7 @@ const baseURL = 'http://rmkubik.local:8000/';
 let tiles = [];
 const types = {
   fire: '🔥',
+  fire_big: '🔥',
   water: '🌊',
   // farm: '🌽',
   mountain: '⛰️',
@@ -13,14 +14,14 @@ const types = {
   empty: ' '
 }
 const imgs = {
-  fire: 'fire.png',
-  water: 'ocean.png',
+  fire: 'ryan_fire.png',
+  water: 'ryan_ocean.png',
   // farm: '🌽',
-  mountain: 'mountain.png',
-  tree: 'tree.png',
-  pine: 'tree.png',
+  mountain: 'ryan_big mountain boys.png',
+  tree: 'ryan_tree 1.png',
+  pine: 'ryan_tree 2.png',
   house: 'hovel.png',
-  empty: 'grass.png'
+  empty: 'ryan_grass.png'
 }
 const gameStyles = {
     margin: 10,
@@ -28,8 +29,8 @@ const gameStyles = {
     gridRowGap: 0
 }
 const tileStyles = {
-    width: 25,
-    height: 25
+    width: 40,
+    height: 40
 }
 const tileClass = 'tile';
 let { s = getRandomSeed(), w = 8, h = 8, lvl } = parseQueryParams();
@@ -289,10 +290,10 @@ function evalNewState(curr, neighbors) {
     	return neighbors.some(n => n === types.fire)
           	? types.fire
             : curr;
-    case types.fire:
-        return neighbors.some(n => n === types.water)
-            ? types.empty
-            : types.fire
+    // case types.fire:
+    //     return neighbors.some(n => n === types.water)
+    //         ? types.empty
+    //         : types.fire
     default:
     	return curr;
   }
