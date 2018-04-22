@@ -177,7 +177,9 @@ function undoSwap() {
     if (state.tileHistory.length > 0) {
         if (state.moveHistory.length > 0) {
             const lastMove = state.moveHistory.pop();
-            state.swapsMade--;
+            if (lastMove !== 'skip') {
+                state.swapsMade--;
+            }
         }
         const lastTiles = state.tileHistory.pop();
         tiles = lastTiles;
@@ -354,7 +356,6 @@ function fsm(states, initialState) {
         },
 
         transition: function(state) {
-            console.log(state);
             this.currentState = state;
         },
 
