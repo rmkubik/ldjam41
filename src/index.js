@@ -22,8 +22,8 @@ const tileStyles = {
     height: 25
 }
 const tileClass = 'tile';
-const {s = Math.floor(Math.random() * Math.pow(10, 8)), w = 8, h = 8, lvl} = readQueryParams();
-const rng = new Random(s);
+let { s = getRandomSeed(), w = 8, h = 8, lvl } = parseQueryParams();
+let rng = new Random(s);
 
 
 const state = fsm(
@@ -113,6 +113,21 @@ function addInputHandlers() {
         state.action('select', getTileCoordFromMouseEvent(event));
         render(tiles, state);
     });
+
+    uiEl.querySelector('#random-seed').onclick = () => {
+        s = getRandomSeed();
+        rng = new Random(s);
+        tiles = getRandomTiles(w, h);
+        render(tiles, state);
+    }
+
+    uiEl.querySelector('#reset-level').onclick = () => {
+        console.log('reset');
+    }
+
+    uiEl.querySelector('#undo-move').onclick = () => {
+        console.log('undo');
+    }
 }
 
 function getTileCoordFromMouseEvent(event) {
@@ -132,7 +147,7 @@ function swap(a, b) {
     state.swapsMade++;
 }
 
-function readQueryParams() {
+function parseQueryParams() {
     const splitParamStrings = str => str.split('&');
     const paramStrings = splitParamStrings(window.location.search.substring(1));
 
@@ -141,6 +156,10 @@ function readQueryParams() {
         params[key] = val;
         return params;
     }, {});
+}
+
+function setQueryParams() {
+
 }
 
 function updateUI(tiles) {
@@ -162,8 +181,9 @@ function updateUI(tiles) {
 }
 
 function renderUI(uiEl) {
-    uiEl.querySelector('#stats').innerHTML = `Houses Left: ${state.score} --- Swaps Made: ${state.swapsMade}`;
-    uiEl.querySelector('#seed').innerHTML = `Seed: ${s}`;
+    uiEl.querySelector('#stats #houses').innerHTML = `Houses Left: ${state.score}`;
+    uiEl.querySelector('#stats #move-count').innerHTML = `Swaps Made: ${state.swapsMade}`;
+    uiEl.querySelector('#seed-value').innerHTML = `Seed: ${s}`;
     uiEl.querySelector('#share').querySelector('input').value = `${baseURL}?s=${s}`;
 }
 
@@ -267,6 +287,10 @@ function getRandomType() {
 
 function getRandomInt(max) {
   return Math.floor(rng.nextFloat() * max);
+}
+
+function getRandomSeed() {
+    return Math.floor(Math.random() * Math.pow(10, 8));
 }
 
 function fsm(states, initialState) {
