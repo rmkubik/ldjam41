@@ -22,10 +22,30 @@ const tileStyles = {
     width: 25,
     height: 25
 }
+const state = fsm(
+    {
+        noneSelected: {
+            select: (position) => {
+                state.selectedTile = position;
+                state.transition('oneSelected');
+            }
+        },
+        oneSelected: {
+            select: (position) => {
+                if (areTilesAdjacent(state.selectedTile, position)) {
+                    // take action
+                    console.log('adjacent');
+                    state.transition('noneSelected');
+                }
+            }
+        }
+    },
+    'noneSelected'
+);
 
 init(game, w, h);
 tiles = getRandomTiles(w, h);
-render(tiles, w, h);
+render(tiles, state);
 const score = calcScore(tiles);
 renderScore(scoreEl, score)
 addInputHandlers();
@@ -48,10 +68,16 @@ function init(gameEl, w, h) {
     }
 }
 
-function render(tiles) {
+function render(tiles, state) {
     for (row = 0; row < w; row++) {
         for (col = 0; col < h; col++) {
             const tile = document.getElementById((row * w) + col);
+            if (state.selectedTile
+                    && row === state.selectedTile.row
+                    && col === state.selectedTile.col
+                ) {
+                    tile.className += ' selected';
+            }
             tile.innerHTML = tiles[row][col];
         }
     }
@@ -61,12 +87,14 @@ function addInputHandlers() {
     document.addEventListener('keydown', event => {
         if (event.key === ' ') {
             tiles = getNextTiles(w, h, tiles);
-            render(tiles);
+            render(tiles, state);
         }
     });
 
     document.addEventListener('click', event => {
         console.log(getTileCoordFromMouseEvent(event));
+        state.action('select', getTileCoordFromMouseEvent(event));
+        render(tiles, state);
     });
 }
 
@@ -75,8 +103,8 @@ function getTileCoordFromMouseEvent(event) {
     const tileHeight = (gameStyles.gridRowGap / 2) + tileStyles.height;
 
     return {
-        row: Math.floor(event.y / tileHeight),
-        col: Math.floor(event.x / tileWidth)
+        row: Math.floor((event.y - gameStyles.margin) / tileHeight),
+        col: Math.floor((event.x - gameStyles.margin) / tileWidth)
     }
 }
 
@@ -174,6 +202,17 @@ function getNeighbors(row, col, tiles) {
   return neighbors;
 }
 
+function areTilesAdjacent(a, b) {
+    const rowDiff = Math.abs(a.row - b.row);
+    const colDiff = Math.abs(a.col - b.col);
+
+    return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+}
+
+function isTileInMap(tile, w, h) {
+
+}
+
 function getTypeById(id) {
     const typeKeys = Object.entries(types);
     return typeKeys[id][1];
@@ -186,4 +225,23 @@ function getRandomType() {
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
+}
+
+function fsm(states, initialState) {
+    this.currentState = initialState;
+
+    return {
+        action: function(action, ...args) {
+            if (states[this.currentState][action]) {
+                states[this.currentState][action](...args);
+            }
+        },
+
+        transition: function(state) {
+            console.log(state);
+            this.currentState = state;
+        },
+
+        currentState: this.currentState
+    }
 }
