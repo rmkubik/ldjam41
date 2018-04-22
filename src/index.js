@@ -28,12 +28,24 @@ const tileTypes = {
   fire: {
       icon: '🔥',
       img: 'ryan_fire.png',
-      frame: 0
+      frame: 0,
+      frames: [
+          'ryan_fire.png',
+          'ryan_fire 2.png',
+          'ryan_fire 3.png',
+          'ryan_fire 4.png'
+      ]
   },
   water: {
       icon: '🌊',
       img: 'ryan_ocean.png',
-      frame: 0
+      frame: 0,
+      frames: [
+          'ryan_ocean.png',
+          'ryan_ocean 2.png'
+      ],
+      frameRate: 5,
+      frameRateCount: 0
   },
   mountain: {
       icon: '⛰️',
@@ -108,7 +120,6 @@ const state = fsm(
         },
         '*': {
             skip: () => {
-                console.log('skip');
                 skipMove();
                 update();
             },
@@ -139,10 +150,18 @@ function init(gameEl, w, h) {
         tile.style.height = tileStyles.height;
         tile.className = tileClass;
         tile.id = i;
-        const img = document.createElement('img');
-        tile.append(img);
+
+        const tileImg = document.createElement('img');
+        tileImg.className = 'tile';
+        tile.append(tileImg);
+
+        const featureImg = document.createElement('img');
+        featureImg.className = 'feature';
+        tile.append(featureImg);
+
         gameEl.append(tile)
     }
+    setInterval(animate, 100);
 }
 
 function render(tiles, state) {
@@ -156,8 +175,21 @@ function render(tiles, state) {
                 ) {
                     tile.className += ' selected';
             }
-            const img = tile.querySelector('img');
-            img.src = `assets/${tiles[row][col].img}`;
+            const img = tile.querySelector('.tile');
+            const fImg = tile.querySelector('.feature');
+            if (isTileType(tiles[row][col], tileTypes.fire)) {
+                fImg.src = `assets/${tileTypes.fire.frames[tiles[row][col].frame]}`;
+                fImg.style.display = 'inline-block';
+                img.src = `assets/${tileTypes.empty.img}`;
+            } else if (isTileType(tiles[row][col], tileTypes.water)) {
+                fImg.src = `assets/${tiles[row][col].frames[tiles[row][col].frame]}`;
+                fImg.style.display = 'inline-block';
+                img.src = `assets/${tileTypes.empty.img}`;
+            } else {
+                fImg.src = '';
+                fImg.style.display = 'none';
+                img.src = `assets/${tiles[row][col].img}`;
+            }
         }
     }
     state.score = updateUI(tiles);
@@ -170,14 +202,43 @@ function update() {
     render(tiles, state);
 }
 
-// function animate() {
-//     const
-// }
+function animate() {
+    const flatTiles = [].concat(...tiles);
+    // need to cast string ids to ints
+    const fireFrameIds = Object.keys(tileTypes.fire.frames).map(id => parseInt(id));
+    const waterFrameIds = Object.keys(tileTypes.water.frames).map(id => parseInt(id));
+
+    flatTiles.forEach(tile => {
+        if (isTileType(tile, tileTypes.fire)) {
+            tile.frame = [
+                ...fireFrameIds.slice(0, tile.frame),
+                ...fireFrameIds.slice(tile.frame + 1)
+            ][getRandomInt(fireFrameIds.length - 1)];
+        } else if (isTileType(tile, tileTypes.water)) {
+            if (tile.frameRateCount - tile.frameRate === 0) {
+                const frames = [
+                    ...waterFrameIds.slice(0, tile.frame),
+                    ...waterFrameIds.slice(tile.frame + 1)
+                ];
+                tile.frame = waterFrameIds.length - 1 === 1
+                    ? frames[0]
+                    : frames[getRandomInt(waterFrameIds.length - 1)];
+                tile.frameRateCount = 0;
+            } else {
+                tile.frameRateCount++;
+            }
+        }
+    });
+    render(tiles, state);
+}
 
 function addInputHandlers() {
     document.addEventListener('keydown', event => {
         if (event.key === ' ') {
             update();
+        }
+        if (event.key === 'b') {
+            animate();
         }
     });
 
@@ -278,17 +339,17 @@ function updateUI(tiles) {
     const flatTiles = [].concat(...tiles);
 
     const forestCount = flatTiles.reduce((count, tile) => {
-      return compareTileTypes(tile, tileTypes.tree) || compareTileTypes(tile, tileTypes.pine)
+      return isTileType(tile, tileTypes.tree) || isTileType(tile, tileTypes.pine)
         ? count + 1
         : count;
     }, 0);
 
     const houseCount = flatTiles.reduce((count, tile) => {
-      return compareTileTypes(tile, tileTypes.house) ? count + 1 : count;
+      return isTileType(tile, tileTypes.house) ? count + 1 : count;
     }, 0);
 
     // const farmCount = flatTiles.reduce((count, tile) => {
-    //   return compareTileTypes(tile, tileTypes.farm) ? count + 1 : count;
+    //   return isTileType(tile, tileTypes.farm) ? count + 1 : count;
     // }, 0);
 
     return houseCount;
@@ -415,7 +476,7 @@ function createTileByIcon(type) {
     );
 }
 
-function compareTileTypes(a, b) {
+function isTileType(a, b) {
     return a.icon === b.icon;
 }
 
@@ -429,6 +490,7 @@ function getRandomTile() {
 //     return getTypeById(getRandomInt(typeCount));
 // }
 
+// max non inclusive
 function getRandomInt(max) {
   return Math.floor(rng.nextFloat() * max);
 }
