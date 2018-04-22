@@ -2,27 +2,64 @@ const game = document.getElementById('game');
 const uiEl = document.getElementById('ui');
 const baseURL = 'http://rmkubik.local:8000/';
 let tiles = [];
-const types = {
-  fire: '🔥',
-  fire_big: '💥',
-  water: '🌊',
-  // farm: '🌽',
-  mountain: '⛰️',
-  tree: '🌳',
-  pine: '🌲',
-  house: '🏠',
-  empty: ' '
-}
-const imgs = {
-  fire: 'ryan_fire.png',
-  fire_big: 'ryan_fire.png',
-  water: 'ryan_ocean.png',
-  // farm: '🌽',
-  mountain: 'ryan_big mountain boys.png',
-  tree: 'ryan_tree 1.png',
-  pine: 'ryan_tree 2.png',
-  house: 'hovel.png',
-  empty: 'ryan_grass.png'
+// const types = {
+//   fire: '🔥',
+//   // fire_big: '💥',
+//   water: '🌊',
+//   // farm: '🌽',
+//   mountain: '⛰️',
+//   tree: '🌳',
+//   pine: '🌲',
+//   house: '🏠',
+//   empty: ' '
+// }
+// const imgs = {
+//   fire: 'ryan_fire.png',
+//   fire_big: 'ryan_fire.png',
+//   water: 'ryan_ocean.png',
+//   // farm: '🌽',
+//   mountain: 'ryan_big mountain boys.png',
+//   tree: 'ryan_tree 1.png',
+//   pine: 'ryan_tree 2.png',
+//   house: 'ryan_house.png',
+//   empty: 'ryan_grass.png'
+// }
+const tileTypes = {
+  fire: {
+      icon: '🔥',
+      img: 'ryan_fire.png',
+      frame: 0
+  },
+  water: {
+      icon: '🌊',
+      img: 'ryan_ocean.png',
+      frame: 0
+  },
+  mountain: {
+      icon: '⛰️',
+      img: 'ryan_big mountain boys.png',
+      frame: 0
+  },
+  tree: {
+      icon: '🌳',
+      img: 'ryan_tree 1.png',
+      frame: 0
+  },
+  pine: {
+      icon: '🌲',
+      img: 'ryan_tree 2.png',
+      frame: 0
+  },
+  house: {
+      icon: '🏠',
+      img: 'ryan_house.png',
+      frame: 0
+  },
+  empty: {
+      icon: ' ',
+      img: 'ryan_grass.png',
+      frame: 0
+  }
 }
 const gameStyles = {
     margin: 10,
@@ -102,7 +139,6 @@ function init(gameEl, w, h) {
         tile.style.height = tileStyles.height;
         tile.className = tileClass;
         tile.id = i;
-        tile.innerHTML = types.empty;
         const img = document.createElement('img');
         tile.append(img);
         gameEl.append(tile)
@@ -121,7 +157,7 @@ function render(tiles, state) {
                     tile.className += ' selected';
             }
             const img = tile.querySelector('img');
-            img.src = `assets/${getImgUrlByType(tiles[row][col])}`;
+            img.src = `assets/${tiles[row][col].img}`;
         }
     }
     state.score = updateUI(tiles);
@@ -133,6 +169,10 @@ function update() {
     tiles = getNextTiles(w, h, tiles);
     render(tiles, state);
 }
+
+// function animate() {
+//     const
+// }
 
 function addInputHandlers() {
     document.addEventListener('keydown', event => {
@@ -179,7 +219,15 @@ function getTileCoordFromMouseEvent(event) {
 }
 
 function swap(a, b) {
-    switchTiles(a, b);
+    if (
+        tiles[a.row][a.col].icon === tileTypes.water.icon
+        || tiles[b.row][b.col].icon === tileTypes.water.com
+    ) {
+        tiles[a.row][a.col] = createTileByIcon(tileTypes.water.icon);
+        tiles[b.row][b.col] = createTileByIcon(tileTypes.water.icon);
+    } else {
+        switchTiles(a, b);
+    }
     state.swapsMade++;
     state.moveHistory.push({
         origin: a,
@@ -230,16 +278,18 @@ function updateUI(tiles) {
     const flatTiles = [].concat(...tiles);
 
     const forestCount = flatTiles.reduce((count, tile) => {
-      return tile === types.tree || tile === types.pine ? count + 1 : count;
+      return compareTileTypes(tile, tileTypes.tree) || compareTileTypes(tile, tileTypes.pine)
+        ? count + 1
+        : count;
     }, 0);
 
     const houseCount = flatTiles.reduce((count, tile) => {
-      return tile === types.house ? count + 1 : count;
+      return compareTileTypes(tile, tileTypes.house) ? count + 1 : count;
     }, 0);
 
-    const farmCount = flatTiles.reduce((count, tile) => {
-      return tile === types.farm ? count + 1 : count;
-    }, 0);
+    // const farmCount = flatTiles.reduce((count, tile) => {
+    //   return compareTileTypes(tile, tileTypes.farm) ? count + 1 : count;
+    // }, 0);
 
     return houseCount;
 }
@@ -256,7 +306,7 @@ function getRandomTiles(w, h) {
     for (let row = 0; row < w; row++) {
       nextTiles.push([]);
       for (let col = 0; col < h; col++) {
-        nextTiles[row].push(getRandomType());
+        nextTiles[row].push(getRandomTile());
       }
     }
     return nextTiles;
@@ -283,18 +333,18 @@ function getNextTiles(w, h, currentTiles) {
 }
 
 function evalNewState(curr, neighbors) {
-  switch (curr) {
-  	case types.tree:
-  	case types.pine:
-    case types.house:
-    case types.farm:
-    	return neighbors.some(n => n === types.fire)
-          	? types.fire
+  switch (curr.icon) {
+  	case tileTypes.tree.icon:
+  	case tileTypes.pine.icon:
+    case tileTypes.house.icon:
+    // case tileTypes.farm.icon:
+    	return neighbors.some(n => n.icon === tileTypes.fire.icon)
+          	? createTileByIcon(tileTypes.fire.icon)
             : curr;
-    // case types.fire:
-    //     return neighbors.some(n => n === types.water)
-    //         ? types.empty
-    //         : types.fire
+    // case tileTypes.fire.icon:
+    //     return neighbors.some(n => n === tileTypes.water.icon)
+    //         ? createTileByIcon(tileTypes.empty.icon)
+    //         : curr
     default:
     	return curr;
   }
@@ -336,24 +386,48 @@ function isTileInMap(tile, w, h) {
 }
 
 function isSameTileType(tiles, a, b) {
-    return tiles[a.row][a.col] === tiles[b.row][b.col];
+    return tiles[a.row][a.col].icon === tiles[b.row][b.col].icon;
 }
 
-function getImgUrlByType(type) {
-    return imgs[Object.entries(types).find(([name, icon]) => {
-        return icon === type;
-    })[0]];
+// function getImgUrlByType(type) {
+//     return imgs[Object.entries(types).find(([name, icon]) => {
+//         return icon === type;
+//     })[0]];
+// }
+
+// function getTypeById(id) {
+//     const typeKeys = Object.entries(types);
+//     return typeKeys[id][1];
+// }
+
+function createTileById(id) {
+    const types = Object.entries(tileTypes);
+    return Object.assign({}, types[id][1]);
 }
 
-function getTypeById(id) {
-    const typeKeys = Object.entries(types);
-    return typeKeys[id][1];
+function createTileByIcon(type) {
+    const types = Object.entries(tileTypes);
+    return Object.assign(
+        {},
+        types.find(([name, tile]) => {
+            return tile.icon === type;
+        })[1]
+    );
 }
 
-function getRandomType() {
-    const typeCount = Object.keys(types).length;
-    return getTypeById(getRandomInt(typeCount));
+function compareTileTypes(a, b) {
+    return a.icon === b.icon;
 }
+
+function getRandomTile() {
+    const typeCount = Object.keys(tileTypes).length;
+    return createTileById(getRandomInt(typeCount));
+}
+
+// function getRandomType() {
+//     const typeCount = Object.keys(types).length;
+//     return getTypeById(getRandomInt(typeCount));
+// }
 
 function getRandomInt(max) {
   return Math.floor(rng.nextFloat() * max);
