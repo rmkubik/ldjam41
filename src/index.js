@@ -1,5 +1,6 @@
 const game = document.getElementById('game');
 const uiEl = document.getElementById('score');
+const baseURL = 'http://rmkubik.local:8000/';
 let tiles = [];
 const types = {
   fire: '🔥',
@@ -156,6 +157,7 @@ function updateUI(tiles) {
 function renderUI(uiEl) {
     uiEl.querySelector('#stats').innerHTML = `Houses Left: ${state.score} --- Swaps Made: ${state.swapsMade}`;
     uiEl.querySelector('#seed').innerHTML = `Seed: ${s}`;
+    uiEl.querySelector('#share').querySelector('input').value = `${baseURL}?s=${s}`;
 }
 
 function getRandomTiles(w, h) {

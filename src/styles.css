@@ -7,6 +7,10 @@ body {
   cursor: pointer;
 }
 
+#share input {
+    width: 300px;
+}
+
 .tile {
   text-align: center;
   /* border: 1px solid black; */
