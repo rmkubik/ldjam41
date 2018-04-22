@@ -5,12 +5,22 @@ let tiles = [];
 const types = {
   fire: '🔥',
   water: '🌊',
-  farm: '🌽',
+  // farm: '🌽',
   mountain: '⛰️',
   tree: '🌳',
   pine: '🌲',
   house: '🏠',
   empty: ' '
+}
+const imgs = {
+  fire: 'fire.png',
+  water: 'ocean.png',
+  // farm: '🌽',
+  mountain: 'mountain.png',
+  tree: 'tree.png',
+  pine: 'tree.png',
+  house: 'hovel.png',
+  empty: 'grass.png'
 }
 const gameStyles = {
     margin: 10,
@@ -106,7 +116,9 @@ function render(tiles, state) {
                 ) {
                     tile.className += ' selected';
             }
-            tile.innerHTML = tiles[row][col];
+            const img = document.createElement('img');
+            img.src = `assets/${getImgUrlByType(tiles[row][col])}`;
+            tile.append(img);
         }
     }
     state.score = updateUI(tiles);
@@ -322,6 +334,12 @@ function isTileInMap(tile, w, h) {
 
 function isSameTileType(tiles, a, b) {
     return tiles[a.row][a.col] === tiles[b.row][b.col];
+}
+
+function getImgUrlByType(type) {
+    return imgs[Object.entries(types).find(([name, icon]) => {
+        return icon === type;
+    })[0]];
 }
 
 function getTypeById(id) {
