@@ -45,6 +45,7 @@ const state = fsm(
                     if (!isSameTileType(tiles, state.selectedTile, position)) {
                         swap(state.selectedTile, position);
                         state.selectedTile = position;
+                        update();
                     }
                 } else if (
                     state.selectedTile.row === position.row
@@ -56,11 +57,23 @@ const state = fsm(
                     state.selectedTile = position;
                 }
             }
+        },
+        '*': {
+            skip: () => {
+                console.log('skip');
+                skipMove();
+                update();
+            },
+            undo: () => {
+                undoSwap();
+            }
         }
     },
     'noneSelected'
 );
 state.swapsMade = 0;
+state.moveHistory = [];
+state.tileHistory = [];
 
 init(game, w, h);
 tiles = getRandomTiles(w, h);
@@ -101,11 +114,16 @@ function render(tiles, state) {
     renderUI(uiEl, state);
 }
 
+function update() {
+    state.tileHistory.push(tiles.map(row => [...row]));
+    tiles = getNextTiles(w, h, tiles);
+    render(tiles, state);
+}
+
 function addInputHandlers() {
     document.addEventListener('keydown', event => {
         if (event.key === ' ') {
-            tiles = getNextTiles(w, h, tiles);
-            render(tiles, state);
+            update();
         }
     });
 
@@ -122,11 +140,17 @@ function addInputHandlers() {
     }
 
     uiEl.querySelector('#reset-level').onclick = () => {
-        console.log('reset');
+        rng = new Random(s);
+        tiles = getRandomTiles(w, h);
+        render(tiles, state);
     }
 
     uiEl.querySelector('#undo-move').onclick = () => {
-        console.log('undo');
+        state.action('undo');
+    }
+
+    uiEl.querySelector('#skip-move').onclick = () => {
+        state.action('skip');
     }
 }
 
@@ -141,10 +165,34 @@ function getTileCoordFromMouseEvent(event) {
 }
 
 function swap(a, b) {
+    switchTiles(a, b);
+    state.swapsMade++;
+    state.moveHistory.push({
+        origin: a,
+        dest: b
+    });
+}
+
+function undoSwap() {
+    if (state.tileHistory.length > 0) {
+        if (state.moveHistory.length > 0) {
+            const lastMove = state.moveHistory.pop();
+            state.swapsMade--;
+        }
+        const lastTiles = state.tileHistory.pop();
+        tiles = lastTiles;
+        // switchTiles(lastSwap.dest, lastSwap.origin);
+    }
+}
+
+function skipMove() {
+    state.moveHistory.push('skip');
+}
+
+function switchTiles(a, b) {
     const aOld = tiles[a.row][a.col];
     tiles[a.row][a.col] = tiles[b.row][b.col];
     tiles[b.row][b.col] = aOld;
-    state.swapsMade++;
 }
 
 function parseQueryParams() {
@@ -300,6 +348,8 @@ function fsm(states, initialState) {
         action: function(action, ...args) {
             if (states[this.currentState][action]) {
                 states[this.currentState][action](...args);
+            } else if (states['*'] && states['*'][action]) {
+                states['*'][action](...args);
             }
         },
 
