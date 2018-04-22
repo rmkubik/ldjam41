@@ -1,5 +1,5 @@
 const game = document.getElementById('game');
-const uiEl = document.getElementById('score');
+const uiEl = document.getElementById('ui');
 const baseURL = 'http://rmkubik.local:8000/';
 let tiles = [];
 const types = {
@@ -44,6 +44,11 @@ const state = fsm(
                 ) {
                     swap(state.selectedTile, position);
                     state.selectedTile = position;
+                } else if (
+                    state.selectedTile.row === position.row
+                    && state.selectedTile.col === position.col
+                ) {
+                    state.selectedTile = null;
                     state.transition('noneSelected');
                 } else {
                     state.selectedTile = position;

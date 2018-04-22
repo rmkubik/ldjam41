@@ -7,6 +7,10 @@ body {
   cursor: pointer;
 }
 
+#ui {
+    margin: 10px;
+}
+
 #share input {
     width: 300px;
 }
