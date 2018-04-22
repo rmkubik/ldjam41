@@ -1,11 +1,12 @@
+body {
+    margin: 0;
+}
+
 #game {
   display: grid;
-  grid-column-gap: 5px;
-  grid-row-gap: 5px;
 }
 
 .tile {
-  width: 25px;
-  height: 25px;
+  text-align: center;
   /* border: 1px solid black; */
 }
