@@ -24,8 +24,8 @@ const imgs = {
 }
 const gameStyles = {
     margin: 10,
-    gridColumnGap: 5,
-    gridRowGap: 5
+    gridColumnGap: 0,
+    gridRowGap: 0
 }
 const tileStyles = {
     width: 25,
@@ -101,6 +101,8 @@ function init(gameEl, w, h) {
         tile.className = tileClass;
         tile.id = i;
         tile.innerHTML = types.empty;
+        const img = document.createElement('img');
+        tile.append(img);
         gameEl.append(tile)
     }
 }
@@ -116,9 +118,8 @@ function render(tiles, state) {
                 ) {
                     tile.className += ' selected';
             }
-            const img = document.createElement('img');
+            const img = tile.querySelector('img');
             img.src = `assets/${getImgUrlByType(tiles[row][col])}`;
-            tile.append(img);
         }
     }
     state.score = updateUI(tiles);

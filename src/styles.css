@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    /* background-color: #27ae60; */
 }
 
 #game {
@@ -24,6 +25,7 @@ body {
 }
 
 .tile {
+  box-sizing: border-box;
   text-align: center;
   /* border: 1px solid black; */
 }
