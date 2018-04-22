@@ -21,7 +21,7 @@ const tileStyles = {
     height: 25
 }
 const tileClass = 'tile';
-const {s = Math.floor(Math.random() << 8), w = 8, h = 8, lvl} = readQueryParams();
+const {s = Math.floor(Math.random() * Math.pow(10, 8)), w = 8, h = 8, lvl} = readQueryParams();
 const rng = new Random(s);
 
 
@@ -154,7 +154,8 @@ function updateUI(tiles) {
 }
 
 function renderUI(uiEl) {
-    uiEl.innerHTML = `Houses Left: ${state.score} --- Swaps Made: ${state.swapsMade}`;
+    uiEl.querySelector('#stats').innerHTML = `Houses Left: ${state.score} --- Swaps Made: ${state.swapsMade}`;
+    uiEl.querySelector('#seed').innerHTML = `Seed: ${s}`;
 }
 
 function getRandomTiles(w, h) {
