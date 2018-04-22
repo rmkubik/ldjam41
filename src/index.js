@@ -25,7 +25,6 @@ const tileClass = 'tile';
 let { s = getRandomSeed(), w = 8, h = 8, lvl } = parseQueryParams();
 let rng = new Random(s);
 
-
 const state = fsm(
     {
         noneSelected: {
