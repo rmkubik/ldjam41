@@ -1,18 +1,8 @@
 const game = document.getElementById('game');
 const score = document.getElementById('score');
 const tiles = [];
-const colors = [
-  '🔥',
-  '🌊',
-  '🌽',
-  '⛰️',
-  '🌳',
-  '🌲',
-  '🏠',
-  ' '
-];
 const types = {
-	fire: '🔥',
+  fire: '🔥',
   water: '🌊',
   farm: '🌽',
   mountain: '⛰️',
@@ -29,10 +19,10 @@ game.style['grid-template-columns'] = 'min-content '.repeat(w);
 for (let i = 0; i < w; i++) {
   tiles.push([]);
   for (let j = 0; j < h; j++) {
-    tiles[i].push(getRandomInt(colors.length));
+    tiles[i].push(getRandomType());
     const tile = document.createElement('div');
     tile.className = 'tile';
-    tile.innerHTML = colors[tiles[i][j]];
+    tile.innerHTML = tiles[i][j];
     game.append(tile)
   }
 }
@@ -40,15 +30,15 @@ for (let i = 0; i < w; i++) {
 const flatTiles = [].concat(...tiles);
 
 const forestCount = flatTiles.reduce((count, tile) => {
-  return colors[tile] === '🌳' || colors[tile] === '🌲' ? count + 1 : count;
+  return tile === '🌳' || tile === '🌲' ? count + 1 : count;
 }, 0);
 
 const houseCount = flatTiles.reduce((count, tile) => {
-  return colors[tile] === '🏠' ? count + 1 : count;
+  return tile === '🏠' ? count + 1 : count;
 }, 0);
 
 const farmCount = flatTiles.reduce((count, tile) => {
-  return colors[tile] === '🌽' ? count + 1 : count;
+  return tile === '🌽' ? count + 1 : count;
 }, 0);
 
 score.innerHTML = `Score: ${Math.min(farmCount, houseCount)}`;
@@ -58,7 +48,7 @@ function getNextTiles(currentTiles) {
   for (let i = 0; i < w; i++) {
     nextTiles.push([]);
     for (let j = 0; j < h; j++) {
-      nextTiles[i].push(getRandomInt(colors.length));
+      nextTiles[i].push(getRandomType());
       const tile = document.createElement('div');
       tile.className = 'tile';
       tile.innerHTML = currentTiles;
@@ -98,7 +88,15 @@ function getNeighbors(col, row, tiles) {
   return neighbors;
 }
 
-console.log(getNeighbors(0, 0, tiles));
+function getTypeById(id) {
+    const typeKeys = Object.entries(types);
+    return typeKeys[id][1];
+}
+
+function getRandomType() {
+    const typeCount = Object.keys(types).length;
+    return getTypeById(getRandomInt(typeCount));
+}
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
