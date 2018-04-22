@@ -40,6 +40,7 @@ const state = fsm(
                     && areTilesAdjacent(state.selectedTile, position)
                 ) {
                     swap(state.selectedTile, position);
+                    state.selectedTile = position;
                     state.transition('noneSelected');
                 } else {
                     state.selectedTile = position;
@@ -49,13 +50,14 @@ const state = fsm(
     },
     'noneSelected'
 );
-const rng = new Random(1);
+state.swapsMade = 0;
+
+const params = readQueryParams();
+const rng = new Random(params.s);
 
 init(game, w, h);
 tiles = getRandomTiles(w, h);
 render(tiles, state);
-const score = calcScore(tiles);
-renderScore(scoreEl, score)
 addInputHandlers();
 
 function init(gameEl, w, h) {
@@ -88,6 +90,8 @@ function render(tiles, state) {
             tile.innerHTML = tiles[row][col];
         }
     }
+    const score = calcScore(tiles);
+    renderScore(scoreEl, score);
 }
 
 function addInputHandlers() {
@@ -118,6 +122,18 @@ function swap(a, b) {
     const aOld = tiles[a.row][a.col];
     tiles[a.row][a.col] = tiles[b.row][b.col];
     tiles[b.row][b.col] = aOld;
+    state.swapsMade++;
+}
+
+function readQueryParams() {
+    const splitParamStrings = str => str.split('&');
+    const paramStrings = splitParamStrings(window.location.search.substring(1));
+
+    return paramStrings.reduce((params, string) => {
+        const [key, val] = string.split('=');
+        params[key] = val;
+        return params;
+    }, {});
 }
 
 function calcScore(tiles) {
@@ -135,11 +151,11 @@ function calcScore(tiles) {
       return tile === types.farm ? count + 1 : count;
     }, 0);
 
-    return Math.min(farmCount, houseCount);
+    return houseCount;
 }
 
 function renderScore(scoreEl, score) {
-    scoreEl.innerHTML = `Score: ${score}`;
+    scoreEl.innerHTML = `Houses Left: ${score} --- Swaps Made: ${state.swapsMade}`;
 }
 
 function getRandomTiles(w, h) {
