@@ -22,12 +22,15 @@ const tileStyles = {
     width: 25,
     height: 25
 }
+const tileClass = 'tile';
 const state = fsm(
     {
         noneSelected: {
             select: (position) => {
-                state.selectedTile = position;
-                state.transition('oneSelected');
+                if (isTileInMap(position, w, h)) {
+                    state.selectedTile = position;
+                    state.transition('oneSelected');
+                }
             }
         },
         oneSelected: {
@@ -61,7 +64,7 @@ function init(gameEl, w, h) {
         const tile = document.createElement('div');
         tile.style.width = tileStyles.width;
         tile.style.height = tileStyles.height;
-        tile.className = 'tile';
+        tile.className = tileClass;
         tile.id = i;
         tile.innerHTML = types.empty;
         gameEl.append(tile)
@@ -72,6 +75,7 @@ function render(tiles, state) {
     for (row = 0; row < w; row++) {
         for (col = 0; col < h; col++) {
             const tile = document.getElementById((row * w) + col);
+            tile.className = tileClass;
             if (state.selectedTile
                     && row === state.selectedTile.row
                     && col === state.selectedTile.col
@@ -210,7 +214,12 @@ function areTilesAdjacent(a, b) {
 }
 
 function isTileInMap(tile, w, h) {
-
+    return (
+        tile.row >= 0
+        && tile.row < h
+        && tile.col >= 0
+        && tile.col < w
+    );
 }
 
 function getTypeById(id) {
