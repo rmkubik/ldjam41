@@ -38,7 +38,10 @@ const state = fsm(
                 if (areTilesAdjacent(state.selectedTile, position)) {
                     // take action
                     console.log('adjacent');
+
                     state.transition('noneSelected');
+                } else {
+                    state.selectedTile = position;
                 }
             }
         }
@@ -52,8 +55,6 @@ render(tiles, state);
 const score = calcScore(tiles);
 renderScore(scoreEl, score)
 addInputHandlers();
-
-console.log(getNextTiles(w, h, tiles));
 
 function init(gameEl, w, h) {
     gameEl.style['grid-template-columns'] = 'min-content '.repeat(w);
@@ -96,19 +97,18 @@ function addInputHandlers() {
     });
 
     document.addEventListener('click', event => {
-        console.log(getTileCoordFromMouseEvent(event));
         state.action('select', getTileCoordFromMouseEvent(event));
         render(tiles, state);
     });
 }
 
 function getTileCoordFromMouseEvent(event) {
-    const tileWidth = (gameStyles.gridColumnGap / 2) + tileStyles.width;
-    const tileHeight = (gameStyles.gridRowGap / 2) + tileStyles.height;
+    const tileWidth = gameStyles.gridColumnGap + tileStyles.width;
+    const tileHeight = gameStyles.gridRowGap + tileStyles.height;
 
     return {
-        row: Math.floor((event.y - gameStyles.margin) / tileHeight),
-        col: Math.floor((event.x - gameStyles.margin) / tileWidth)
+        row: Math.floor((event.pageY - gameStyles.margin) / tileHeight),
+        col: Math.floor((event.pageX - gameStyles.margin) / tileWidth)
     }
 }
 
