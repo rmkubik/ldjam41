@@ -1,5 +1,5 @@
 const game = document.getElementById('game');
-const scoreEl = document.getElementById('score');
+const uiEl = document.getElementById('score');
 let tiles = [];
 const types = {
   fire: '🔥',
@@ -11,8 +11,6 @@ const types = {
   house: '🏠',
   empty: ' '
 }
-const w = 8;
-const h = 8;
 const gameStyles = {
     margin: 10,
     gridColumnGap: 5,
@@ -23,6 +21,10 @@ const tileStyles = {
     height: 25
 }
 const tileClass = 'tile';
+const {s = Math.floor(Math.random() << 8), w = 8, h = 8, lvl} = readQueryParams();
+const rng = new Random(s);
+
+
 const state = fsm(
     {
         noneSelected: {
@@ -51,9 +53,6 @@ const state = fsm(
     'noneSelected'
 );
 state.swapsMade = 0;
-
-const params = readQueryParams();
-const rng = new Random(params.s);
 
 init(game, w, h);
 tiles = getRandomTiles(w, h);
@@ -90,8 +89,8 @@ function render(tiles, state) {
             tile.innerHTML = tiles[row][col];
         }
     }
-    const score = calcScore(tiles);
-    renderScore(scoreEl, score);
+    state.score = updateUI(tiles);
+    renderUI(uiEl, state);
 }
 
 function addInputHandlers() {
@@ -136,7 +135,7 @@ function readQueryParams() {
     }, {});
 }
 
-function calcScore(tiles) {
+function updateUI(tiles) {
     const flatTiles = [].concat(...tiles);
 
     const forestCount = flatTiles.reduce((count, tile) => {
@@ -154,8 +153,8 @@ function calcScore(tiles) {
     return houseCount;
 }
 
-function renderScore(scoreEl, score) {
-    scoreEl.innerHTML = `Houses Left: ${score} --- Swaps Made: ${state.swapsMade}`;
+function renderUI(uiEl) {
+    uiEl.innerHTML = `Houses Left: ${state.score} --- Swaps Made: ${state.swapsMade}`;
 }
 
 function getRandomTiles(w, h) {
