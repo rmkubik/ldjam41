@@ -4,7 +4,7 @@ const baseURL = 'http://rmkubik.local:8000/';
 let tiles = [];
 const types = {
   fire: '🔥',
-  fire_big: '🔥',
+  fire_big: '💥',
   water: '🌊',
   // farm: '🌽',
   mountain: '⛰️',
@@ -15,6 +15,7 @@ const types = {
 }
 const imgs = {
   fire: 'ryan_fire.png',
+  fire_big: 'ryan_fire.png',
   water: 'ryan_ocean.png',
   // farm: '🌽',
   mountain: 'ryan_big mountain boys.png',
