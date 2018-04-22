@@ -42,8 +42,10 @@ const state = fsm(
                     isTileInMap(position, w, h)
                     && areTilesAdjacent(state.selectedTile, position)
                 ) {
-                    swap(state.selectedTile, position);
-                    state.selectedTile = position;
+                    if (!isSameTileType(tiles, state.selectedTile, position)) {
+                        swap(state.selectedTile, position);
+                        state.selectedTile = position;
+                    }
                 } else if (
                     state.selectedTile.row === position.row
                     && state.selectedTile.col === position.col
@@ -247,6 +249,10 @@ function isTileInMap(tile, w, h) {
         && tile.col >= 0
         && tile.col < w
     );
+}
+
+function isSameTileType(tiles, a, b) {
+    return tiles[a.row][a.col] === tiles[b.row][b.col];
 }
 
 function getTypeById(id) {
