@@ -1,30 +1,7 @@
 const game = document.getElementById('game');
 const uiEl = document.getElementById('ui');
-// const baseURL = 'http://rmkubik.local:8000/';
 const url = new UrlHelper(this);
 let tiles = [];
-// const types = {
-//   fire: '🔥',
-//   // fire_big: '💥',
-//   water: '🌊',
-//   // farm: '🌽',
-//   mountain: '⛰️',
-//   tree: '🌳',
-//   pine: '🌲',
-//   house: '🏠',
-//   empty: ' '
-// }
-// const imgs = {
-//   fire: 'ryan_fire.png',
-//   fire_big: 'ryan_fire.png',
-//   water: 'ryan_ocean.png',
-//   // farm: '🌽',
-//   mountain: 'ryan_big mountain boys.png',
-//   tree: 'ryan_tree 1.png',
-//   pine: 'ryan_tree 2.png',
-//   house: 'ryan_house.png',
-//   empty: 'ryan_grass.png'
-// }
 const tileTypes = {
   fire: {
       icon: '🔥',
@@ -351,10 +328,6 @@ function updateUI(tiles) {
 
     const houseCount = countHouses(tiles);
 
-    // const farmCount = flatTiles.reduce((count, tile) => {
-    //   return isTileType(tile, tileTypes.farm) ? count + 1 : count;
-    // }, 0);
-
     return houseCount;
 }
 
@@ -474,17 +447,6 @@ function isFireSpreadDone(tiles) {
     }
 }
 
-// function getImgUrlByType(type) {
-//     return imgs[Object.entries(types).find(([name, icon]) => {
-//         return icon === type;
-//     })[0]];
-// }
-
-// function getTypeById(id) {
-//     const typeKeys = Object.entries(types);
-//     return typeKeys[id][1];
-// }
-
 function createTileById(id) {
     const types = Object.entries(tileTypes);
     return Object.assign({}, types[id][1]);
@@ -508,11 +470,6 @@ function getRandomTile() {
     const typeCount = Object.keys(tileTypes).length;
     return createTileById(getRandomInt(typeCount));
 }
-
-// function getRandomType() {
-//     const typeCount = Object.keys(types).length;
-//     return getTypeById(getRandomInt(typeCount));
-// }
 
 // max non inclusive
 function getRandomInt(max) {
