@@ -5,10 +5,10 @@ class UrlHelper {
         if (this.inIFrame(window)) {
             const a = document.createElement('a');
             a.href = window.document.referrer;
-            this.baseURL = `${a.protocol}//${a.host}`;
+            this.baseURL = a.origin + a.pathname;
             queryString = a.search;
         } else {
-            this.baseURL = `${window.location.protocol}//${window.location.host}`;
+            this.baseURL = window.location.origin + window.location.pathname;
             queryString = window.location.search;
         }
 
