@@ -239,6 +239,9 @@ function addInputHandlers() {
         rng = new Random(s);
         tiles = getRandomTiles(w, h);
         state.initialHouseCount = countHouses(tiles);
+        state.tileHistory = [];
+        state.moveHistory = [];
+        state.swapsMade = 0;
         render(tiles, state);
     }
 
