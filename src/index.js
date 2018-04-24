@@ -1,6 +1,7 @@
 const game = document.getElementById('game');
 const uiEl = document.getElementById('ui');
-const baseURL = 'http://rmkubik.local:8000/';
+// const baseURL = 'http://rmkubik.local:8000/';
+const url = new UrlHelper(this);
 let tiles = [];
 // const types = {
 //   fire: '🔥',
@@ -83,7 +84,7 @@ const tileStyles = {
     height: 40
 }
 const tileClass = 'tile';
-let { s = getRandomSeed(), w = 8, h = 8, lvl } = parseQueryParams();
+let { s = getRandomSeed(), w = 8, h = 8, lvl } = url.params;
 let rng = new Random(s);
 
 const state = fsm(
@@ -369,7 +370,7 @@ function renderUI(uiEl) {
     uiEl.querySelector('#stats #houses').innerHTML = `Houses Left: ${state.score}/${state.initialHouseCount}`;
     uiEl.querySelector('#stats #move-count').innerHTML = `Swaps Made: ${state.swapsMade}`;
     uiEl.querySelector('#seed-value').innerHTML = `Seed: ${s}`;
-    uiEl.querySelector('#share').querySelector('input').value = `${baseURL}?s=${s}`;
+    uiEl.querySelector('#share').querySelector('input').value = `${url.baseURL}?s=${s}`;
 }
 
 function getRandomTiles(w, h) {
@@ -463,6 +464,7 @@ function isSameTileType(tiles, a, b) {
 function isFireSpreadDone(tiles) {
     for (let row = 0; row < w; row++) {
       for (let col = 0; col < h; col++) {
+          // if (tiles[row][col].icon === ' ')
         const neighbors = getNeighbors(
             row,
             col,
