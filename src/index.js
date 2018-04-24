@@ -14,6 +14,11 @@ const tileTypes = {
           'ryan_fire 4.png'
       ]
   },
+  ash: {
+      icon: 'a',
+      img: 'ash heap.png',
+      frame: 0
+  },
   water: {
       icon: '🌊',
       img: 'ryan_ocean.png',
@@ -190,19 +195,10 @@ function animate() {
 
     flatTiles.forEach(tile => {
         if (isTileType(tile, tileTypes.fire)) {
-            tile.frame = [
-                ...fireFrameIds.slice(0, tile.frame),
-                ...fireFrameIds.slice(tile.frame + 1)
-            ][getRandomInt(fireFrameIds.length - 1)];
+            tile.frame = getRandomOtherIndex(tile.frame, tile.frames);
         } else if (isTileType(tile, tileTypes.water)) {
             if (tile.frameRateCount - tile.frameRate === 0) {
-                const frames = [
-                    ...waterFrameIds.slice(0, tile.frame),
-                    ...waterFrameIds.slice(tile.frame + 1)
-                ];
-                tile.frame = waterFrameIds.length - 1 === 1
-                    ? frames[0]
-                    : frames[getRandomInt(waterFrameIds.length - 1)];
+                tile.frame = getRandomOtherIndex(tile.frame, tile.frames);
                 tile.frameRateCount = 0;
             } else {
                 tile.frameRateCount++;
@@ -210,6 +206,16 @@ function animate() {
         }
     });
     render(tiles, state);
+}
+
+function getRandomOtherIndex(index, list) {
+    const indices = Object.keys(list).map(id => parseInt(id));
+    const others = [
+        ...indices.slice(0, index),
+        ...indices.slice(index + 1)
+    ];
+
+    return others[getRandomInt(others.length)];
 }
 
 function addInputHandlers() {
