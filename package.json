@@ -1,0 +1,20 @@
+{
+  "name": "ldjam41",
+  "version": "1.0.0",
+  "description": "Conway's Game of Firefighting (And Tile Swapping)",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "butler push . rmkubik/wildfire:html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmkubik/ldjam41.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rmkubik/ldjam41/issues"
+  },
+  "homepage": "https://github.com/rmkubik/ldjam41#readme"
+}
