@@ -4,7 +4,7 @@
   "description": "Conway's Game of Firefighting (And Tile Swapping)",
   "main": "index.js",
   "scripts": {
-    "deploy": "butler push . rmkubik/wildfire:html",
+    "deploy": "butler push . law5guy/wildfire:html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
