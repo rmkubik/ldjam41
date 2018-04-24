@@ -17,7 +17,8 @@ const tileTypes = {
   ash: {
       icon: 'a',
       img: 'ash heap.png',
-      frame: 0
+      frame: 0,
+      nonRandom: true
   },
   water: {
       icon: '🌊',
@@ -466,8 +467,11 @@ function isTileType(a, b) {
 }
 
 function getRandomTile() {
-    const typeCount = Object.keys(tileTypes).length;
-    return createTileById(getRandomInt(typeCount));
+    const typeKeys = Object.entries(tileTypes).filter(type => {
+        return !type.nonRandom;
+    });
+
+    return createTileByIcon(typeKeys[getRandomInt(typeKeys.length)][1].icon);
 }
 
 // max non inclusive
