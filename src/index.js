@@ -289,7 +289,7 @@ function undoSwap() {
     if (state.tileHistory.length > 0) {
         const lastTiles = state.tileHistory.pop();
         tiles = lastTiles;
-        
+
         if (state.moveHistory.length > 0) {
             const lastMove = state.moveHistory.pop();
             if (lastMove !== 'skip') {
@@ -308,21 +308,6 @@ function switchTiles(a, b) {
     const aOld = tiles[a.row][a.col];
     tiles[a.row][a.col] = tiles[b.row][b.col];
     tiles[b.row][b.col] = aOld;
-}
-
-function parseQueryParams() {
-    const splitParamStrings = str => str.split('&');
-    const paramStrings = splitParamStrings(window.location.search.substring(1));
-
-    return paramStrings.reduce((params, string) => {
-        const [key, val] = string.split('=');
-        params[key] = val;
-        return params;
-    }, {});
-}
-
-function setQueryParams() {
-
 }
 
 function updateUI(tiles) {
