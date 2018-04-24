@@ -231,20 +231,14 @@ function addInputHandlers() {
         s = getRandomSeed();
         rng = new Random(s);
         tiles = getRandomTiles(w, h);
-        state.initialHouseCount = countHouses(tiles);
-        state.tileHistory = [];
-        state.moveHistory = [];
-        state.swapsMade = 0;
+        resetState(state);
         render(tiles, state);
     }
 
     uiEl.querySelector('#reset-level').onclick = () => {
         rng = new Random(s);
         tiles = getRandomTiles(w, h);
-        state.initialHouseCount = countHouses(tiles);
-        state.tileHistory = [];
-        state.moveHistory = [];
-        state.swapsMade = 0;
+        resetState(state);
         render(tiles, state);
     }
 
@@ -255,6 +249,13 @@ function addInputHandlers() {
     uiEl.querySelector('#skip-move').onclick = () => {
         state.action('skip');
     }
+}
+
+function resetState(state) {
+    state.initialHouseCount = countHouses(tiles);
+    state.tileHistory = [];
+    state.moveHistory = [];
+    state.swapsMade = 0;
 }
 
 function getTileCoordFromMouseEvent(event) {
