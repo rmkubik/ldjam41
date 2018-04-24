@@ -287,15 +287,16 @@ function swap(a, b) {
 
 function undoSwap() {
     if (state.tileHistory.length > 0) {
+        const lastTiles = state.tileHistory.pop();
+        tiles = lastTiles;
+        
         if (state.moveHistory.length > 0) {
             const lastMove = state.moveHistory.pop();
             if (lastMove !== 'skip') {
                 state.swapsMade--;
+                switchTiles(lastMove.dest, lastMove.origin);
             }
         }
-        const lastTiles = state.tileHistory.pop();
-        tiles = lastTiles;
-        // switchTiles(lastSwap.dest, lastSwap.origin);
     }
 }
 
