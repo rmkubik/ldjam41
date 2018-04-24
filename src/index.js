@@ -467,7 +467,7 @@ function isTileType(a, b) {
 }
 
 function getRandomTile() {
-    const typeKeys = Object.entries(tileTypes).filter(type => {
+    const typeKeys = Object.entries(tileTypes).filter(([name, type]) => {
         return !type.nonRandom;
     });
 
