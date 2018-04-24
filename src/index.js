@@ -386,10 +386,10 @@ function evalNewState(curr, neighbors) {
     	return neighbors.some(n => n.icon === tileTypes.fire.icon)
           	? createTileByIcon(tileTypes.fire.icon)
             : curr;
-    // case tileTypes.fire.icon:
-    //     return neighbors.some(n => n === tileTypes.water.icon)
-    //         ? createTileByIcon(tileTypes.empty.icon)
-    //         : curr
+    case tileTypes.fire.icon:
+        return neighbors.every(n => n.icon === tileTypes.fire.icon)
+            ? createTileByIcon(tileTypes.ash.icon)
+            : curr
     default:
     	return curr;
   }
