@@ -133,9 +133,11 @@ const state = fsm(
 state.swapsMade = 0;
 state.moveHistory = [];
 state.tileHistory = [];
+state.initialHouseCount = 0;
 
 init(game, w, h);
 tiles = getRandomTiles(w, h);
+state.initialHouseCount = countHouses(tiles);
 render(tiles, state);
 addInputHandlers();
 
@@ -251,12 +253,14 @@ function addInputHandlers() {
         s = getRandomSeed();
         rng = new Random(s);
         tiles = getRandomTiles(w, h);
+        state.initialHouseCount = countHouses(tiles);
         render(tiles, state);
     }
 
     uiEl.querySelector('#reset-level').onclick = () => {
         rng = new Random(s);
         tiles = getRandomTiles(w, h);
+        state.initialHouseCount = countHouses(tiles);
         render(tiles, state);
     }
 
@@ -344,9 +348,7 @@ function updateUI(tiles) {
         : count;
     }, 0);
 
-    const houseCount = flatTiles.reduce((count, tile) => {
-      return isTileType(tile, tileTypes.house) ? count + 1 : count;
-    }, 0);
+    const houseCount = countHouses(tiles);
 
     // const farmCount = flatTiles.reduce((count, tile) => {
     //   return isTileType(tile, tileTypes.farm) ? count + 1 : count;
@@ -355,8 +357,16 @@ function updateUI(tiles) {
     return houseCount;
 }
 
+function countHouses(tiles) {
+    const flatTiles = [].concat(...tiles);
+
+    return flatTiles.reduce((count, tile) => {
+      return isTileType(tile, tileTypes.house) ? count + 1 : count;
+    }, 0);
+}
+
 function renderUI(uiEl) {
-    uiEl.querySelector('#stats #houses').innerHTML = `Houses Left: ${state.score}`;
+    uiEl.querySelector('#stats #houses').innerHTML = `Houses Left: ${state.score}/${state.initialHouseCount}`;
     uiEl.querySelector('#stats #move-count').innerHTML = `Swaps Made: ${state.swapsMade}`;
     uiEl.querySelector('#seed-value').innerHTML = `Seed: ${s}`;
     uiEl.querySelector('#share').querySelector('input').value = `${baseURL}?s=${s}`;
@@ -448,6 +458,18 @@ function isTileInMap(tile, w, h) {
 
 function isSameTileType(tiles, a, b) {
     return tiles[a.row][a.col].icon === tiles[b.row][b.col].icon;
+}
+
+function isFireSpreadDone(tiles) {
+    for (let row = 0; row < w; row++) {
+      for (let col = 0; col < h; col++) {
+        const neighbors = getNeighbors(
+            row,
+            col,
+            currentTiles
+        );
+      }
+    }
 }
 
 // function getImgUrlByType(type) {
